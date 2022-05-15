@@ -2,10 +2,14 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 import pyttsx3
 import speech_recognition as sr
 sia = SentimentIntensityAnalyzer()
-p = open("negative.txt", 'r')
+p = open("kavi.txt", 'r')
 li = p.read()
-dict = sia.polarity_scores("negative.txt")
-dor = '<pitch absmiddle="5">'+li+'</pitch>'
+dict = sia.polarity_scores(li)
+new = li.split()
+print(new)
+dor1 = '<pitch absmiddle="10">'+li+'</pitch>'
+dor2 = '<pitch absmiddle="4">'+li+'</pitch>'
+dor3 = '<pitch absmiddle="6">'+li+'</pitch>'
 print(dict)
 # engine = pyttsx3.init(driverName="sapi5")
 # voices = engine.getProperty('voices')
@@ -36,20 +40,20 @@ def say_something():
             voices = engine.getProperty('voices')
             volume = engine.getProperty('volume')
             engine.setProperty('voice', voices[1].id)
-            engine.setProperty("rate", 200)  # changing the rate of the voice
+            engine.setProperty("rate", 180)  # changing the rate of the voice
             engine.setProperty('volume', volume-0.001)
             print("positive")
-            engine.say(dor)
+            engine.say(dor1)
             engine.runAndWait()
         elif dict.get('neu') > dict.get('neg') and dict.get('neu') > dict.get('pos'):
             engine = pyttsx3.init(driverName="sapi5")
             voices = engine.getProperty('voices')
             volume = engine.getProperty('volume')
             engine.setProperty('voice', voices[1].id)
-            engine.setProperty("rate", 150)  # changing the rate of the voice
+            engine.setProperty("rate", 160)  # changing the rate of the voice
             engine.setProperty('volume', volume-0.001)
             print("neutral")
-            engine.say(dor)
+            engine.say(dor3)
             engine.runAndWait()
         else:
             engine = pyttsx3.init(driverName="sapi5")
@@ -59,7 +63,7 @@ def say_something():
             engine.setProperty("rate", 130)  # changing the rate of the voice
             engine.setProperty('volume', volume-0.001)
             engine.say(
-                dor)
+                dor2)
             engine.runAndWait()
 
 
