@@ -1,70 +1,66 @@
 from nltk.sentiment import SentimentIntensityAnalyzer
-import pyttsx3
 import speech_recognition as sr
+from tkinter import Tk     # from tkinter import Tk for Python 3.x
+import PyPDF2
+import pyttsx3
+from tkinter.filedialog import askopenfilename
+
+Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+# show an "Open" dialog box and return the path to the selected file
+filename = askopenfilename()
+print(filename)
 sia = SentimentIntensityAnalyzer()
-p = open("kavi.txt", 'r')
-li = p.read()
-dict = sia.polarity_scores(li)
-new = li.split()
-print(new)
-dor1 = '<pitch absmiddle="10">'+li+'</pitch>'
-dor2 = '<pitch absmiddle="4">'+li+'</pitch>'
-dor3 = '<pitch absmiddle="6">'+li+'</pitch>'
-print(dict)
-# engine = pyttsx3.init(driverName="sapi5")
-# voices = engine.getProperty('voices')
-# volume = engine.getProperty('volume')
-# engine.setProperty('voice', voices[1].id)
-# # changing the rate of the voice
-# engine.setProperty("rate", 200)
-# engine.setProperty('volume', volume-0.001)
-# engine.say(says)good
-# engine.say(dor)
-# # engine.say('<pitch absmiddle="5">My day was pretty good ,what about you?</pitch>')
-# # engine.say('<pitch absmiddle="10">My day was pretty bad ,what about you?</pitch>')
-# engine.runAndWait()
 
 
 def say_something():
-    r5 = sr.Recognizer()
-    with sr.Microphone() as source:
+    if dict.get('pos') > dict.get('neg') and dict.get('pos') > dict.get('neu'):
         engine = pyttsx3.init(driverName="sapi5")
+        voices = engine.getProperty('voices')
+        volume = engine.getProperty('volume')
+        engine.setProperty('voice', voices[1].id)
+        engine.setProperty("rate", 170)  # changing the rate of the voice
+        engine.setProperty('volume', volume-0.001)
+        print("positive")
+        engine.say(dor1)
         engine.runAndWait()
-        # audio = r5.listen(source)
-        # audio = r5.recognize_google(audio)
-        # dict = sia.polarity_scores(audio)
-        # print(audio)
-        # print(dict)
-        if dict.get('pos') > dict.get('neg') and dict.get('pos') > dict.get('neu'):
-            engine = pyttsx3.init(driverName="sapi5")
-            voices = engine.getProperty('voices')
-            volume = engine.getProperty('volume')
-            engine.setProperty('voice', voices[1].id)
-            engine.setProperty("rate", 180)  # changing the rate of the voice
-            engine.setProperty('volume', volume-0.001)
-            print("positive")
-            engine.say(dor1)
-            engine.runAndWait()
-        elif dict.get('neu') > dict.get('neg') and dict.get('neu') > dict.get('pos'):
-            engine = pyttsx3.init(driverName="sapi5")
-            voices = engine.getProperty('voices')
-            volume = engine.getProperty('volume')
-            engine.setProperty('voice', voices[1].id)
-            engine.setProperty("rate", 160)  # changing the rate of the voice
-            engine.setProperty('volume', volume-0.001)
-            print("neutral")
-            engine.say(dor3)
-            engine.runAndWait()
-        else:
-            engine = pyttsx3.init(driverName="sapi5")
-            voices = engine.getProperty('voices')
-            volume = engine.getProperty('volume')
-            engine.setProperty('voice', voices[1].id)  # changing the voice
-            engine.setProperty("rate", 130)  # changing the rate of the voice
-            engine.setProperty('volume', volume-0.001)
-            engine.say(
-                dor2)
-            engine.runAndWait()
+    elif dict.get('neu') > dict.get('neg') and dict.get('neu') > dict.get('pos'):
+        engine = pyttsx3.init(driverName="sapi5")
+        voices = engine.getProperty('voices')
+        volume = engine.getProperty('volume')
+        engine.setProperty('voice', voices[1].id)
+        engine.setProperty("rate", 160)  # changing the rate of the voice
+        engine.setProperty('volume', volume-0.001)
+        print("neutral")
+        engine.say(dor3)
+        engine.runAndWait()
+    else:
+        engine = pyttsx3.init(driverName="sapi5")
+        voices = engine.getProperty('voices')
+        volume = engine.getProperty('volume')
+        engine.setProperty('voice', voices[1].id)  # changing the voice
+        engine.setProperty("rate", 150)  # changing the rate of the voice
+        engine.setProperty('volume', volume-0.001)
+        engine.say(
+            dor2)
+        engine.runAndWait()
 
 
-say_something()
+pdf_file = open(filename, 'rb')
+read_pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
+# Find the number of pages in the PDF document
+number_of_pages = read_pdf.getNumPages()
+print(number_of_pages)
+# init function to get an engine instance for the speech synthesis
+engine = pyttsx3.init()
+# Read from page 3 to the end of the PDF document
+for i in range(20, number_of_pages):
+    # Read the PDF page
+    page = read_pdf.getPage(i)
+    # Extract the text of the PDF page
+    page_content = page.extractText()
+    dict = sia.polarity_scores(page_content)
+    dor1 = '<pitch absmiddle="10">'+page_content+'</pitch>'
+    dor2 = '<pitch absmiddle="4">'+page_content+'</pitch>'
+    dor3 = '<pitch absmiddle="6">'+page_content+'</pitch>'
+    print(dict)
+    say_something()
